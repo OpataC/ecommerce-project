@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CBO{% endblock %}</title>
+    
+    <!-- Local Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    
+    <!-- Local Custom CSS (Loaded AFTER Bootstrap so your custom styles win) -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-light text-dark d-flex flex-column min-vh-100">
+
+<!-- Green Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm py-2">
+    <div class="container cbo-nav-container">
+        
+        <!-- Brand / Logo -->
+        <a class="navbar-brand fw-bold fs-3" href="{% url 'home' %}">
+            My Store
+        </a>
+
+        <!-- Mobile Hamburger Button (Works offline with local bootstrap.bundle.min.js) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Collapsible Horizontal Links -->
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav gap-1 mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                        Home
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'userdashboard' %}active{% endif %}" href="{% url 'userdashboard' %}">
+                            User Dashboard
+                        </a>
+                    </li>
+
+                    {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'products' %}active{% endif %}" href="{% url 'products' %}">
+                                Admin Dashboard
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'addproduct' %}active{% endif %}" href="{% url 'addproduct' %}">
+                                Add Product
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'logout' %}active{% endif %}" href="{% url 'logout' %}">
+                            Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'register' %}active{% endif %}" href="{% url 'register' %}">
+                            Register
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link cbo-nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">
+                            Login
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+    <!-- Unique Page Content -->
+    <main class="container cbo-main-container my-4 flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Global Store Footer -->
+    <footer class="cbo-footer bg-success shadow-sm py-4 mt-auto">
+        <div class="container cbo-nav-container text-center">
+            <p class="fw-bold text-white mb-1 fs-6">
+                CBO Fashion &amp; Apparel Store &bull; Style &amp; Quality You Can Trust &copy; 2026
+            </p>
+            <div class="d-flex justify-content-center flex-wrap gap-3 my-2 medium block">
+                <a href="{% url 'home' %}" class="text-secondary text-decoration-none">Home</a>
+                <span class="text-muted">&bull;</span>
+                <a href="{% url 'products' %}" class="text-secondary text-decoration-none">Admin Dashboard</a>
+                <span class="text-muted">&bull;</span>
+                <a href="{% url 'addproduct' %}" class="text-secondary text-decoration-none">Add Product</a>
+                <span class="text-muted">&bull;</span>
+                <a href="{% url 'login' %}" class="text-secondary text-decoration-none">Login</a>
+                <a href="{% url 'register' %}" class="text-secondary text-decoration-none">Register</a>
+                <span class="text-muted">&bull;</span>
+            </div>
+            <hr class="my-3">
+
+        </div>
+    </footer>
+
+    <!-- Local Bootstrap 5 JS Bundle (Required for mobile navbar toggle & dropdowns) -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    
+    <!-- Local Custom JS -->
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

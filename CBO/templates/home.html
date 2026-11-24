@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - CBO Fashion & Apparel{% endblock %}
+
+{% block content %}
+<div class="container cbo-container my-4">
+
+    <!-- TOP BOUTIQUE PROMO STRIP -->
+    <div class="cbo-promo-banner rounded-3 px-3 py-2 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2 small">
+        <span class="fw-semibold text-success">
+            ★ New Season Arrivals Now In Stock — {{ total_products|default:"Fresh" }} Styles Available for Men, Women &amp; Kids
+        </span>
+        <span class="text-muted">
+            Sizes XS – XXL &nbsp;|&nbsp; Easy 7-Day Exchanges
+        </span>
+    </div>
+
+    <!-- HERO SECTION -->
+    <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm mb-4 hero-box position-relative overflow-hidden">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 mb-3 fw-semibold">
+                    CBO Fashion &amp; Apparel Boutique
+                </span>
+                <h1 class="text-success fw-bold display-6 mb-3">
+                    Welcome to CBO Fashion &amp; Apparel
+                </h1>
+                <p class="fs-5 text-muted mb-4 hero-subtitle">
+                    Discover stylish everyday wear, quality fabrics, and seasonal collections for men, women, and kids. Browse our latest outfits or manage store inventory from the navigation bar above.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'products' %}" class="btn btn-success btn-lg fw-semibold px-4">
+                        Browse Store &amp; Inventory
+                    </a>
+                    <a href="#clothing-categories" class="btn btn-outline-success btn-lg fw-semibold px-4">
+                        Explore Collections
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right-side Boutique Highlights Box -->
+            <div class="col-lg-4">
+                <div class="bg-light rounded-3 p-3 p-md-4 border cbo-hero-highlights">
+                    <p class="text-uppercase text-success fw-bold small mb-3 letter-spacing-1">
+                        Why Shop With Us
+                    </p>
+                    <ul class="list-unstyled mb-0 small text-dark d-flex flex-column gap-2">
+                        <li class="d-flex align-items-start gap-2">
+                            <span class="text-success fw-bold">✓</span>
+                            <span><strong>Curated Fabrics:</strong> Breathable cottons, tailored blends &amp; durable denim.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <span class="text-success fw-bold">✓</span>
+                            <span><strong>Full Size Range:</strong> Inclusive fits from XS to XXL across collections.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <span class="text-success fw-bold">✓</span>
+                            <span><strong>Live Stock Tracking:</strong> {{ in_stock_count|default:"Real-time" }} items currently ready to order.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE COLLECTION FILTER BAR (DYNAMIC) -->
+    <div id="clothing-categories" class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 pt-2">
+        <div>
+            <h2 class="h4 text-dark fw-bold mb-0">Shop by Department</h2>
+            <p class="text-muted small mb-0">Filter our core apparel categories or inspect stock availability</p>
+        </div>
+        <div class="btn-group btn-group-sm cbo-filter-group" role="group" aria-label="Filter clothing collections">
+            <button type="button" class="btn btn-success active" data-filter="all">All Collections</button>
+            {% for category in categories %}
+                <button type="button" class="btn btn-outline-success" data-filter="{{ category.slug }}">
+                    {{ category.name }}
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- BODY CONTENT: CLOTHING CATEGORIES (FETCHED FROM DB) -->
+    <div class="row g-4 mb-4">
+        {% for category in categories %}
+        <div class="col-md-4 cbo-category-item" data-category="{{ category.slug }}">
+            <div class="card h-100 border-0 shadow-sm rounded-3 category-card">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="cbo-category-tag">{{ category.tagline|default:"Boutique Collection" }}</span>
+                        <span class="badge bg-light text-dark border small">
+                            {{ category.product_count }} Item{{ category.product_count|pluralize }}
+                        </span>
+                    </div>
+                    <h3 class="h5 text-dark fw-bold mb-2">{{ category.name }}</h3>
+                    <p class="text-muted small mb-3 flex-grow-1">
+                        {{ category.description|default:"Explore our latest curated pieces in this department." }}
+                    </p>
+                    <div class="border-top pt-3 mt-auto d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">{{ category.highlights|default:"In Stock Now" }}</span>
+                        <a href="{% url 'products' %}?category={{ category.slug }}" class="text-success text-decoration-none fw-bold small category-link">
+                            Shop {{ category.name }} &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-light border text-center py-4">
+                <p class="text-muted mb-2">No clothing categories have been added to the database yet.</p>
+                <a href="{% url 'products' %}" class="btn btn-sm btn-success">Go to Inventory</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- NEW ARRIVALS / FEATURED PRODUCTS FROM DATABASE -->
+    {% if featured_products %}
+    <div class="mb-4 pt-2">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="h4 text-dark fw-bold mb-0">Latest Arrivals</h2>
+                <p class="text-muted small mb-0">Freshly stocked items in our store</p>
+            </div>
+            <a href="{% url 'products' %}" class="btn btn-sm btn-outline-success fw-semibold">View All &rarr;</a>
+        </div>
+
+        <div class="row g-4">
+            {% for product in featured_products %}
+            <div class="col-sm-6 col-md-3">
+                <div class="card h-100 border-0 shadow-sm rounded-3">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top object-fit-cover" alt="{{ product.name }}" style="height: 200px;">
+                    {% else %}
+                        <div class="bg-light d-flex align-items-center justify-content-center text-muted small" style="height: 200px;">
+                            No Image Available
+                        </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <span class="badge bg-success-subtle text-success small">{{ product.category.name }}</span>
+                            {% if product.stock > 0 %}
+                                <span class="text-success small fw-semibold">{{ product.stock }} in stock</span>
+                            {% else %}
+                                <span class="text-danger small fw-semibold">Out of stock</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="h6 fw-bold text-dark mt-1 mb-1">{{ product.name }}</h3>
+                        <p class="text-muted small mb-2">Sizes: {{ product.available_sizes|default:"S - XL" }}</p>
+                        <div class="mt-auto pt-2 border-top d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-dark">KES {{ product.price }}</span>
+                            <a href="{% url 'products' %}" class="btn btn-sm btn-outline-success">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+      <!-- QUICK SIZE & FIT REFERENCE STRIP (DYNAMIC FROM DB) -->
+    <div class="bg-white p-4 rounded-3 shadow-sm border mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-5">
+                <h3 class="h6 text-success fw-bold text-uppercase mb-1">Standard Apparel Size Guide</h3>
+                <p class="text-muted small mb-0">
+                    Need help picking the right fit? Check our standard chest &amp; waist measurements before ordering or updating stock.
+                </p>
+            </div>
+            <div class="col-md-7">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered text-center align-middle mb-0 small cbo-size-table">
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                                {% for size in size_guides %}
+                                    <th>{{ size.size_label }}</th>
+                                {% empty %}
+                                    <th>S</th>
+                                    <th>M</th>
+                                    <th>L</th>
+                                    <th>XL</th>
+                                    <th>XXL</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-semibold text-dark">Chest (in)</td>
+                                {% for size in size_guides %}
+                                    <td>{{ size.chest_inches }}</td>
+                                {% empty %}
+                                    <td>36 – 38</td>
+                                    <td>38 – 40</td>
+                                    <td>40 – 42</td>
+                                    <td>42 – 44</td>
+                                    <td>44 – 46</td>
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <td class="fw-semibold text-dark">Waist (in)</td>
+                                {% for size in size_guides %}
+                                    <td>{{ size.waist_inches }}</td>
+                                {% empty %}
+                                    <td>28 – 30</td>
+                                    <td>31 – 33</td>
+                                    <td>34 – 36</td>
+                                    <td>37 – 39</td>
+                                    <td>40 – 42</td>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECONDARY BODY SECTION: STORE INFO & ADMIN SHORTCUT (DYNAMIC FROM DB) -->
+    <div class="bg-light p-4 p-md-5 rounded-3 border mb-4 cbo-store-info">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <h2 class="h4 text-success fw-bold mb-2">
+                    {{ store_info.heading|default:"Quality Fashion for Every Wardrobe" }}
+                </h2>
+                <p class="text-dark mb-3">
+                    {{ store_info.description|default:"CBO Fashion & Apparel brings affordable, high-quality garments to our community. Store administrators can easily add new seasonal arrivals, update available clothing sizes, and monitor stock levels directly from the dashboard." }}
+                </p>
+                <p class="text-secondary small mb-0">
+                    <strong>Store Hours:</strong> {{ store_info.store_hours|default:"Monday – Saturday, 8:30 AM – 7:00 PM" }} &nbsp;|&nbsp;
+                    <strong>Exchanges:</strong> {{ store_info.exchange_policy|default:"Accepted within 7 days with receipt" }}
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                {% if user.is_staff %}
+                    <a href="{% url 'products' %}" class="btn btn-success fw-semibold px-4 py-2">
+                        Manage Inventory &rarr;
+                    </a>
+                {% else %}
+                    <a href="{% url 'products' %}" class="btn btn-success fw-semibold px-4 py-2">
+                        Browse Full Catalog &rarr;
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ISOLATED CATEGORY FILTER SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filterButtons = document.querySelectorAll('.cbo-filter-group button');
+    const categoryCards = document.querySelectorAll('.cbo-category-item');
+
+    filterButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const selected = this.getAttribute('data-filter');
+
+            filterButtons.forEach(function (btn) {
+                btn.classList.remove('btn-success', 'active');
+                btn.classList.add('btn-outline-success');
+            });
+
+            this.classList.remove('btn-outline-success');
+            this.classList.add('btn-success', 'active');
+
+            categoryCards.forEach(function (card) {
+                if (selected === 'all' || card.getAttribute('data-category') === selected) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

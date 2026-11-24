@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.id %}Update Apparel{% else %}Add New Apparel{% endif %} - CBO Fashion & Apparel{% endblock %}
+
+{% block content %}
+<style>
+    /* Forces all images inside any inventory table to stay a neat 50x50 square */
+    table img {
+        width: 50px !important;
+        height: 50px !important;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="container cbo-form-container my-4">
+
+    <!-- FORM CARD -->
+    <div class="card border-0 shadow-sm rounded-3 auth-card mb-4">
+        <div class="card-body p-4 p-md-5">
+            
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 pb-3 mb-4 border-bottom">
+                <div>
+                    {% if form.instance.id %}
+                        <h2 class="h4 text-success fw-bold mb-1">Update Clothing Item</h2>
+                    {% else %}
+                        <h2 class="h4 text-success fw-bold mb-1">Add Clothing Item</h2>
+                    {% endif %}
+                    <p class="text-muted small mb-0">Fill in the apparel details below to publish it to your store inventory.</p>
+                </div>
+                <a href="{% url 'products' %}" class="btn btn-light border fw-bold btn-sm px-3 py-2 text-dark">
+                    &larr; Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Product Form -->
+            <form id="product-form" method="POST" enctype="multipart/form-data" class="cbo-django-form">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="mb-2">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark small">
+                        {{ field.label }}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <small class="text-danger d-block mt-1">{{ field.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="mt-4 pt-2 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-success fw-bold px-4 py-2">
+                            {% if form.instance.id %}Update Apparel{% else %}Save Apparel to Store{% endif %}
+                        </button>
+                        <a href="{% url 'products' %}" class="btn btn-light border fw-bold px-4 py-2 text-secondary">
+                            Cancel
+                        </a>
+                    </div>
+
+                    {% if form.instance.id %}
+                    <!-- Trigger Delete Modal -->
+                    <button type="button" class="btn btn-outline-danger fw-bold px-4 py-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                        Delete Item
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Shared Bootstrap Update Confirmation Modal -->
+<div class="modal fade" id="updateConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold text-success">Update Clothing Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body fw-semibold text-success">
+                Are you sure you want to update <strong id="modal-update-name"></strong>?
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-light border fw-bold" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="modal-confirm-update-btn" class="btn btn-success fw-bold">Yes, Update</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shared Bootstrap Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold delete-warning-text">Delete Clothing Item</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body fw-semibold delete-warning-text">
+                Are you sure you want to delete <strong id="modal-product-name"></strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-light border fw-bold" data-bs-dismiss="modal">Cancel</button>
+                <a href="#" id="modal-confirm-delete-btn" class="btn btn-danger fw-bold">Yes, Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Update Trigger
+    document.querySelectorAll('.update-trigger').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productName = this.getAttribute('data-name');
+            const updateUrl = this.getAttribute('data-url');
+
+            if (typeof bootstrap !== 'undefined') {
+                document.getElementById('modal-update-name').textContent = productName;
+                document.getElementById('modal-confirm-update-btn').setAttribute('href', updateUrl);
+                const updateModal = new bootstrap.Modal(document.getElementById('updateConfirmModal'));
+                updateModal.show();
+            } else {
+                if (confirm(`Are you sure you want to update "${productName}"?`)) {
+                    window.location.href = updateUrl;
+                }
+            }
+        });
+    });
+
+    // 2. Delete Trigger
+    document.querySelectorAll('.delete-trigger').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productName = this.getAttribute('data-name');
+            const deleteUrl = this.getAttribute('data-url');
+
+            if (typeof bootstrap !== 'undefined') {
+                document.getElementById('modal-product-name').textContent = productName;
+                document.getElementById('modal-confirm-delete-btn').setAttribute('href', deleteUrl);
+                const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+                deleteModal.show();
+            } else {
+                if (confirm(`Are you sure you want to delete "${productName}"? This cannot be undone.`)) {
+                    window.location.href = deleteUrl;
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

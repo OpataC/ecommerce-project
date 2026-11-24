@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account - CBO Fashion & Apparel{% endblock %}
+
+{% block content %}
+<div class="container cbo-auth-container my-4">
+    <div class="card border-0 shadow-sm rounded-3 auth-card">
+        <div class="card-body p-4">
+            
+            <h2 class="text-center text-success fw-bold h4 mb-1">Create an Account</h2>
+            <p class="text-center text-muted small mb-3">
+                Join CBO Fashion &amp; Apparel to manage inventory or shop collections
+            </p>
+
+            <!-- Error / Validation Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger py-2 px-3 small text-center mb-3" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Linked to Django's UserCreationForm -->
+            <form method="POST" class="cbo-django-form">
+                {% csrf_token %}
+
+                {% for field in form %}
+                <div class="mb-2">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark small mb-1">
+                        {{ field.label }}
+                    </label>
+                    <input 
+                        type="{{ field.field.widget.input_type }}" 
+                        name="{{ field.html_name }}" 
+                        id="{{ field.id_for_label }}"
+                        value="{{ field.value|default_if_none:'' }}"
+                        placeholder="{% if field.name == 'username' %}Choose a username{% elif field.name == 'email' %}Enter your email address{% elif field.name == 'password1' %}Create a strong password{% elif field.name == 'password2' %}Confirm your password{% else %}Enter {{ field.label|lower }}{% endif %}"
+                        {% if field.field.required %}required{% endif %}
+                    >
+                    {% if field.errors %}
+                        <small class="text-danger d-block mt-1">{{ field.errors|striptags }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success w-100 fw-bold py-2 mt-2">
+                    Register Account
+                </button>
+            </form>
+
+            <div class="text-center mt-3 pt-3 border-top small text-muted">
+                Already have an account? 
+                <a href="{% url 'login' %}" class="text-success fw-bold text-decoration-none category-link">Login here</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
