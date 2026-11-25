@@ -30,23 +30,23 @@ DEBUG=True
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = [
-"127.0.0.01",
-"localhost",
-"https://ecommerce-project-1-y5dw.onrender.com",
-"https://ecommerce-project-4oqz.onrender.com"
-
+    '127.0.0.1',
+    'localhost',
+    '.onrender.com',  # Allows your live Render URL to work too
 ]
 
 
 # Application definition
-[
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cloudinary_storage',  # Must be AFTER staticfiles
+    'cloudinary_storage',
     'cloudinary',
-    'CBO',
+    'CBO',  # <-- Make sure this is here and saved!
 ]
 
 MIDDLEWARE = [
