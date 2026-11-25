@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # UPDATED: Reads SECRET_KEY from .env so your production key is never exposed in code
 SECRET_KEY = config('SECRET_KEY')
 
-DEBUG=True
+DEBUG=False
 # UPDATED: Reads DEBUG status from .env (defaults to False for safety in production)
 DEBUG = config('DEBUG', default=False, cast=bool)
 
@@ -126,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'   # Folder where 'collectstatic' gathers all static files for WhiteNoise to serve in production
 
@@ -142,13 +142,13 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
 
-# ADDED: Django 6.1 storage configuration directing uploaded media to Cloudinary and static files to WhiteNoise
+# Django 6.1 storage configuration directing uploaded media to Cloudinary and static files to WhiteNoise
 STORAGES = {
     'default': {
         'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     },
     'staticfiles': {
-        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
     },
 }
 
