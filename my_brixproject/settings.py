@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',    # ADDED: Must come BEFORE 'django.contrib.staticfiles' so Cloudinary handles media/static commands properly
-    'django.contrib.staticfiles',  
-    'cloudinary',   # ADDED: Enables Cloudinary integration for cloud media storage
+    'django.contrib.staticfiles',   
+    'cloudinary_storage',    # Must be AFTER staticfiles
+    'cloudinary', 
     'CBO',
 ]
 
