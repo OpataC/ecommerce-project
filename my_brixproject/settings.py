@@ -25,10 +25,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # UPDATED: Reads SECRET_KEY from .env so your production key is never exposed in code
 SECRET_KEY = config('SECRET_KEY')
 
+DEBUG=True
 # UPDATED: Reads DEBUG status from .env (defaults to False for safety in production)
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+"127.0.0.01",
+"localhost",
+"https://ecommerce-project-1-y5dw.onrender.com",
+"https://ecommerce-project-4oqz.onrender.com"
+
+]
 
 
 # Application definition
